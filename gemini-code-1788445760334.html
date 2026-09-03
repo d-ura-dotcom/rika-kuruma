@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>風とゴムの力のはたらき 記録シート</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --blue-color: #1e88e5;
+      --yellow-color: #fbc02d;
+      --orange-color: #e65100;
+      --bg-color: #f4f9f4;
+    }
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif;
+      background-color: var(--bg-color);
+      color: #333;
+      margin: 0;
+      padding: 15px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #2e7d32;
+      background: #e8f5e9;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #a5d6a7;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border: 1px solid #ccc;
+    }
+    h2 {
+      font-size: 1.2rem;
+      border-bottom: 3px solid #81c784;
+      padding-bottom: 4px;
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 6px 2px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+    th { background-color: #e8f5e9; }
+    .badge {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+    .badge-blue { background-color: var(--blue-color); }
+    .badge-yellow { background-color: var(--yellow-color); }
+    .badge-orange { background-color: var(--orange-color); }
+
+    .input-cell input {
+      width: 38px;
+      font-size: 1rem;
+      text-align: right;
+      padding: 2px;
+      border: 1px solid #888;
+      border-radius: 4px;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+      margin-top: 10px;
+    }
+    .btn-container {
+      text-align: center;
+      margin: 15px 0;
+    }
+    .btn {
+      background-color: #2e7d32;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1b5e20;
+    }
+    .btn:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+    #export-area {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    .message {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 8px;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>風とゴムの力のはたらき 実験記録シート</h1>
+
+  <div class="btn-container">
+    <button class="btn" onclick="copyToClipboard()">📷 がぞうとして コピーする</button>
+    <div id="msg" class="message"></div>
+  </div>
+
+  <div id="export-area">
+    <div class="card">
+      <h2>風の強さと 車が動いたきょり</h2>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:28%;">風の強さ</th>
+            <th colspan="3">車が動いたきょり</th>
+          </tr>
+          <tr>
+            <th style="width:24%;">１回め</th>
+            <th style="width:24%;">２回め</th>
+            <th style="width:24%;">３回め</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>弱い <span class="badge badge-blue"></span></td>
+            <td class="input-cell"><input type="number" id="w1_m" value="2">m<input type="number" id="w1_cm" value="47">cm</td>
+            <td class="input-cell"><input type="number" id="w2_m" value="2">m<input type="number" id="w2_cm" value="31">cm</td>
+            <td class="input-cell"><input type="number" id="w3_m" value="2">m<input type="number" id="w3_cm" value="39">cm</td>
+          </tr>
+          <tr>
+            <td>強い <span class="badge badge-orange"></span></td>
+            <td class="input-cell"><input type="number" id="s1_m" value="3">m<input type="number" id="s1_cm" value="70">cm</td>
+            <td class="input-cell"><input type="number" id="s2_m" value="3">m<input type="number" id="s2_cm" value="80">cm</td>
+            <td class="input-cell"><input type="number" id="s3_m" value="3">m<input type="number" id="s3_cm" value="73">cm</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <canvas id="windChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>ゴムをのばす長さと 車が動いたきょり</h2>
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:28%;">わゴムをのばす長さ</th>
+            <th colspan="3">車が動いたきょり</th>
+          </tr>
+          <tr>
+            <th style="width:24%;">１回め</th>
+            <th style="width:24%;">２回め</th>
+            <th style="width:24%;">３回め</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>5 cm <span class="badge badge-blue"></span></td>
+            <td class="input-cell"><input type="number" id="r5_1_m" value="3">m<input type="number" id="r5_1_cm" value="60">cm</td>
+            <td class="input-cell"><input type="number" id="r5_2_m" value="3">m<input type="number" id="r5_2_cm" value="76">cm</td>
+            <td class="input-cell"><input type="number" id="r5_3_m" value="3">m<input type="number" id="r5_3_cm" value="63">cm</td>
+          </tr>
+          <tr>
+            <td>10 cm <span class="badge badge-yellow"></span></td>
+            <td class="input-cell"><input type="number" id="r10_1_m" value="8">m<input type="number" id="r10_1_cm" value="74">cm</td>
+            <td class="input-cell"><input type="number" id="r10_2_m" value="8">m<input type="number" id="r10_2_cm" value="68">cm</td>
+            <td class="input-cell"><input type="number" id="r10_3_m" value="8">m<input type="number" id="r10_3_cm" value="53">cm</td>
+          </tr>
+          <tr>
+            <td>15 cm <span class="badge badge-orange"></span></td>
+            <td class="input-cell"><input type="number" id="r15_1_m" value="11">m<input type="number" id="r15_1_cm" value="74">cm</td>
+            <td class="input-cell"><input type="number" id="r15_2_m" value="11">m<input type="number" id="r15_2_cm" value="59">cm</td>
+            <td class="input-cell"><input type="number" id="r15_3_m" value="12">m<input type="number" id="r15_3_cm" value="31">cm</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="chart-container">
+        <canvas id="rubberChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function getVal(mId, cmId) {
+    const m = parseFloat(document.getElementById(mId).value) || 0;
+    const cm = parseFloat(document.getElementById(cmId).value) || 0;
+    return m + (cm / 100);
+  }
+
+  let windChart, rubberChart;
+
+  function initCharts() {
+    // 1. 風のグラフ
+    const ctxWind = document.getElementById('windChart').getContext('2d');
+    windChart = new Chart(ctxWind, {
+      type: 'line',
+      data: {
+        labels: ['1回め', '2回め', '3回め'],
+        datasets: [
+          {
+            label: '弱い',
+            data: [getVal('w1_m', 'w1_cm'), getVal('w2_m', 'w2_cm'), getVal('w3_m', 'w3_cm')],
+            borderColor: '#1e88e5',
+            backgroundColor: '#1e88e5',
+            pointRadius: 9,
+            showLine: false
+          },
+          {
+            label: '強い',
+            data: [getVal('s1_m', 's1_cm'), getVal('s2_m', 's2_cm'), getVal('s3_m', 's3_cm')],
+            borderColor: '#e65100',
+            backgroundColor: '#e65100',
+            pointRadius: 9,
+            showLine: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: '風の強さと車が動いたきょり', font: { size: 15 } },
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: {
+            title: { display: true, text: '(m)' },
+            min: 0,
+            max: 5,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+
+    // 2. ゴムのグラフ
+    const ctxRubber = document.getElementById('rubberChart').getContext('2d');
+    rubberChart = new Chart(ctxRubber, {
+      type: 'line',
+      data: {
+        labels: ['1回め', '2回め', '3回め'],
+        datasets: [
+          {
+            label: '5cm',
+            data: [getVal('r5_1_m', 'r5_1_cm'), getVal('r5_2_m', 'r5_2_cm'), getVal('r5_3_m', 'r5_3_cm')],
+            borderColor: '#1e88e5',
+            backgroundColor: '#1e88e5',
+            pointRadius: 9,
+            showLine: false
+          },
+          {
+            label: '10cm',
+            data: [getVal('r10_1_m', 'r10_1_cm'), getVal('r10_2_m', 'r10_2_cm'), getVal('r10_3_m', 'r10_3_cm')],
+            borderColor: '#fbc02d',
+            backgroundColor: '#fbc02d',
+            pointRadius: 9,
+            showLine: false
+          },
+          {
+            label: '15cm',
+            data: [getVal('r15_1_m', 'r15_1_cm'), getVal('r15_2_m', 'r15_2_cm'), getVal('r15_3_m', 'r15_3_cm')],
+            borderColor: '#e65100',
+            backgroundColor: '#e65100',
+            pointRadius: 9,
+            showLine: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: { display: true, text: 'ゴムをのばす長さと車が動いたきょり', font: { size: 15 } },
+          legend: { position: 'bottom' }
+        },
+        scales: {
+          y: {
+            title: { display: true, text: '(m)' },
+            min: 0,
+            max: 15,
+            ticks: { stepSize: 5 }
+          }
+        }
+      }
+    });
+  }
+
+  function updateCharts() {
+    windChart.data.datasets[0].data = [getVal('w1_m', 'w1_cm'), getVal('w2_m', 'w2_cm'), getVal('w3_m', 'w3_cm')];
+    windChart.data.datasets[1].data = [getVal('s1_m', 's1_cm'), getVal('s2_m', 's2_cm'), getVal('s3_m', 's3_cm')];
+    windChart.update();
+
+    rubberChart.data.datasets[0].data = [getVal('r5_1_m', 'r5_1_cm'), getVal('r5_2_m', 'r5_2_cm'), getVal('r5_3_m', 'r5_3_cm')];
+    rubberChart.data.datasets[1].data = [getVal('r10_1_m', 'r10_1_cm'), getVal('r10_2_m', 'r10_2_cm'), getVal('r10_3_m', 'r10_3_cm')];
+    rubberChart.data.datasets[2].data = [getVal('r15_1_m', 'r15_1_cm'), getVal('r15_2_m', 'r15_2_cm'), getVal('r15_3_m', 'r15_3_cm')];
+    rubberChart.update();
+  }
+
+  document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', updateCharts);
+  });
+
+  async function copyToClipboard() {
+    const msg = document.getElementById('msg');
+    msg.style.color = '#333';
+    msg.innerText = 'がぞうを 作成中...';
+    try {
+      const exportArea = document.getElementById('export-area');
+      const canvas = await html2canvas(exportArea, { scale: 2 });
+      
+      canvas.toBlob(async (blob) => {
+        try {
+          const item = new ClipboardItem({ 'image/png': blob });
+          await navigator.clipboard.write([item]);
+          msg.style.color = '#2e7d32';
+          msg.innerText = '✅ クリップボードに コピーしました！ロイロノートや スライドに はりつけられます。';
+        } catch (err) {
+          msg.style.color = '#d32f2f';
+          msg.innerText = '⚠️ コピーできませんでした。画面キャプチャを使ってください。';
+        }
+      });
+    } catch (e) {
+      msg.innerText = 'エラーが発生しました。';
+    }
+  }
+
+  window.onload = initCharts;
+</script>
+</body>
+</html>
